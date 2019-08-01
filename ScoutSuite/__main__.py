@@ -19,7 +19,7 @@ from ScoutSuite.providers.base.authentication_strategy_factory import get_authen
 """
 
 This function is not required for Ayanr.
-As it will be calling the _run () directly 
+As it will be calling the run () directly 
 
 def run_from_cli():
     parser = ScoutSuiteArgumentParser()
