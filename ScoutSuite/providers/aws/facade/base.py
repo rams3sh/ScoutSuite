@@ -56,16 +56,20 @@ class AWSFacade(AWSBaseFacade):
             return regions
 
     def _set_session(self, credentials: dict):
+
+        """
+        The credentials received as argument within this function is actually a session due to changes
+        made in AWSAuthenticationStrategy Class. However variable name is retained as is to ensure
+        it does not break any functionality in Scout.
+        However , it is being assigned to a variable named aws_session for better clarity.
+        """
+        aws_session = credentials
+
         # TODO: This conditional check is ok for now, but eventually, the credentials should always be provided.
-        if not credentials:
+        if not aws_session:
             self.session = None
             return
-
-        session_params = {'aws_access_key_id': credentials.get('access_key'),
-                          'aws_secret_access_key': credentials.get('secret_key'),
-                          'aws_session_token': credentials.get('token')}
-
-        self.session = boto3.session.Session(**session_params)
+        self.session = aws_session
 
     def _instantiate_facades(self):
         self.ec2 = EC2Facade(self.session, self.owner_id)

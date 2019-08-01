@@ -25,15 +25,21 @@ def connect_service(service, credentials, region_name=None, config=None, silent=
     api_client = None
     try:
         client_params = {'service_name': service.lower()}
+
+        """
+        Since session is being taken care at AWSAuthentication Strategy
+        It is not necessary to initiate the session here.
+                
         session_params = {'aws_access_key_id': credentials.get('access_key'),
                           'aws_secret_access_key': credentials.get('secret_key'),
                           'aws_session_token': credentials.get('token')}
+        """
         if region_name:
             client_params['region_name'] = region_name
-            session_params['region_name'] = region_name
+            # session_params['region_name'] = region_name
         if config:
             client_params['config'] = config
-        aws_session = boto3.session.Session(**session_params)
+        aws_session = credentials
         if not silent:
             info_message = 'Connecting to AWS %s' % service
             if region_name:

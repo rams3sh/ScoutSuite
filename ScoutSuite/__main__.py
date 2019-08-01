@@ -16,6 +16,10 @@ from ScoutSuite.output.utils import get_filename
 from ScoutSuite.providers import get_provider
 from ScoutSuite.providers.base.authentication_strategy_factory import get_authentication_strategy
 
+"""
+
+This function is not required for Ayanr.
+As it will be calling the _run () directly 
 
 def run_from_cli():
     parser = ScoutSuiteArgumentParser()
@@ -57,11 +61,15 @@ def run_from_cli():
                    programmatic_execution=False)
     except (KeyboardInterrupt, SystemExit):
         print_info('Exiting')
-
+"""
 
 def run(provider,
         # AWS
         profile=None,
+        aws_access_key_id=None,
+        aws_secret_access_key=None,
+        role_arn=None,
+        session_name=None,
         # Azure
         user_account=False, service_account=None,
         cli=False, msi=False, service_principal=False, file_auth=None,
@@ -87,6 +95,7 @@ def run(provider,
         log_file=None,
         no_browser=False,
         programmatic_execution=True):
+
     """
     Run a scout job in an async event loop.
     """
@@ -101,6 +110,10 @@ def run(provider,
 async def _run(provider,
                # AWS
                profile,
+               aws_access_key_id,
+               aws_secret_access_key,
+               role_arn,
+               session_name,
                # Azure
                user_account, service_account,
                cli, msi, service_principal, file_auth, tenant_id, subscription_id,
@@ -138,6 +151,10 @@ async def _run(provider,
     auth_strategy = get_authentication_strategy(provider)
     try:
         credentials = auth_strategy.authenticate(profile=profile,
+                                                 aws_access_key_id=aws_access_key_id,
+                                                 aws_secret_access_key=aws_secret_access_key,
+                                                 role_arn=role_arn,
+                                                 session_name=session_name,
                                                  user_account=user_account,
                                                  service_account=service_account,
                                                  cli=cli,

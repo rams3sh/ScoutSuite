@@ -100,7 +100,8 @@ class IAMFacade(AWSBaseFacade):
             [functools.partial(self._get_and_set_inline_policies, iam_resource_type='user'),
              self._get_and_set_user_groups,
              self._get_and_set_user_login_profile,
-             self._get_and_set_user_acces_keys,
+             self._get_and_set_user_tags,
+             self._get_and_set_user_access_keys,
              self._get_and_set_user_mfa_devices],
             users)
         return users
@@ -118,6 +119,21 @@ class IAMFacade(AWSBaseFacade):
                 print_exception('Failed to get login profile: {}'.format(e))
         except Exception as e:
             print_exception('Failed to get login profile: {}'.format(e))
+
+    async def _get_and_set_user_tags(self, user: {}):
+        client = AWSFacadeUtils.get_client('iam', self.session)
+        try:
+                temp = await run_concurrently(
+                lambda: client.list_user_tags(UserName=user['UserName'])['Tags'])
+
+                tags=dict()
+                for element in temp:
+                    tags[element['Key']] = element['Value']
+                user['Tags'] = tags
+        except ClientError as e:
+            print_exception('Failed to get user tags: {}'.format(e))
+        except Exception as e:
+            print_exception('Failed to get user tags: {}'.format(e))
 
     async def _get_and_set_user_groups(self, user: {}):
         groups = await AWSFacadeUtils.get_all_pages(
@@ -160,7 +176,7 @@ class IAMFacade(AWSBaseFacade):
                 print_exception('Failed to get account password policy: {}'.format(e))
             return None
 
-    async def _get_and_set_user_acces_keys(self, user: {}):
+    async def _get_and_set_user_access_keys(self, user: {}):
         client = AWSFacadeUtils.get_client('iam', self.session)
         try:
             user['AccessKeys'] = await run_concurrently(
